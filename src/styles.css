@@ -50,3 +50,11 @@ nav .on{color:var(--acc);border-top-color:var(--acc)}
 .pv{margin:0 0 12px;padding:0;list-style:none}.pv li{padding:8px 0;border-bottom:1px solid var(--line)}
 .toast{position:fixed;inset-inline:16px;bottom:calc(84px + env(safe-area-inset-bottom,0px));background:var(--tx);color:var(--bg);border-radius:14px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;z-index:30;font-weight:700}
 .toast[hidden]{display:none}.toast button{background:none;border:0;color:var(--work);font:inherit;font-weight:800;cursor:pointer}
+.intro{min-height:100vh;max-width:520px;margin:0 auto;padding:56px 20px calc(24px + env(safe-area-inset-bottom,0px));box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;gap:14px;position:relative}
+.intro .skip{position:absolute;top:14px;inset-inline-start:16px}
+.intro .vis{min-height:150px;display:flex;flex-direction:column;justify-content:center;gap:10px}
+.intro .vis .rib{margin:0}.intro .h{font-size:32px;margin:0}.intro .ip{font-size:19px;margin:0}
+.intro .dots{display:flex;gap:8px;justify-content:center;margin:10px 0}
+.intro .dots i{width:9px;height:9px;border-radius:50%;background:var(--line)}
+.intro .dots i.on{background:var(--acc);width:26px;border-radius:5px}
+.toast.upd{bottom:calc(150px + env(safe-area-inset-bottom,0px))}

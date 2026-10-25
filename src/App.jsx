@@ -1,3 +1,5 @@
+import { useRegisterSW } from 'virtual:pwa-register/react';
+import Intro, { seenIntro, markIntro } from './Intro.jsx';
 import { useEffect, useRef, useState } from 'react';
 import { D, toN, toS, todayN, fmt, short, dm, days, after, cycleAt, info, extend, startState } from './logic.js';
 
@@ -47,6 +49,13 @@ export default function App() {
   const [toast, setToast] = useState(null);
   const undo = useRef(null);
   const bk = useRef(null);
+  const { needRefresh: [needRefresh], updateServiceWorker } = useRegisterSW({
+    onRegisteredSW(_, r) { if (r) setInterval(() => r.update(), 60 * 60 * 1000); },
+  });
+  const [intro, setIntro] = useState(() => !seenIntro());
+  const upd = needRefresh
+    ? <div className="toast upd"><span>فيه نسخة جديدة من التطبيق</span><button onClick={() => updateServiceWorker(true)}>حدّث</button></div>
+    : null;
 
   useEffect(() => { try { s ? localStorage.setItem(KEY, JSON.stringify(s)) : localStorage.removeItem(KEY); } catch { /* storage unavailable */ } }, [s]);
   useEffect(() => { navigator.storage?.persist?.(); }, []);
@@ -55,11 +64,14 @@ export default function App() {
   const go = (t) => { setTab(t); window.scrollTo(0, 0); };
   const obGo = () => { setS(startState(ob, s)); setSheet(null); setTab('home'); };
 
+  if (intro) return <><Intro onDone={() => { markIntro(); setIntro(false); }} />{upd}</>;
+
   if (!s) {
     return (
       <div className="wrap"><h1 className="h">أهلاً بيك</h1>
         <p className="mut">سؤالين بس وبعدها تعرف أي يوم تختاره هو شغل ولا إجازة.</p>
         <SetupForm ob={ob} setOb={setOb} sheet={false} onGo={obGo} />
+        {upd}
       </div>
     );
   }
@@ -156,6 +168,8 @@ export default function App() {
 
   const more = () => (<>
     <h1 className="h">المزيد</h1>
+    <div className="card"><b>شرح التطبيق</b><p className="mut">شاشات سريعة تعرّفك التطبيق بيعمل إيه.</p>
+      <button className="btn sec" onClick={() => setIntro(true)} style={{ width: '100%' }}>اعرض الشرح</button></div>
     <div className="card"><b>ضبط الجدول من الأول</b><p className="mut">لو الأرقام مش مظبوطة، قول أنت النهارده في أنهي يوم وأنا أظبط الباقي. المناسبات بتفضل زي ما هي.</p>
       <button className="btn sec" onClick={openSetup} style={{ width: '100%' }}>صحّح النهارده</button></div>
     <div className="card"><b>نسخة احتياطية للمناسبات</b><p className="mut">انسخ النص ده واحفظه. ولصقه هنا بعدين يرجّع المناسبات.</p>
@@ -190,6 +204,7 @@ export default function App() {
       <button key={key} className={tab === key ? 'on' : ''} onClick={() => go(key)}>{l}</button>)}</nav>
     {sheet && <div className="sheet"><div>{sheet === 'delay' ? delayView()
       : <><h2 className="h2" style={{ marginTop: 0 }}>ضبط الجدول</h2><SetupForm ob={ob} setOb={setOb} sheet onGo={obGo} onCancel={() => setSheet(null)} /></>}</div></div>}
+    {upd}
     {toast && <div className="toast"><span>{toast.t}</span>{toast.u && <button onClick={doUndo}>تراجع</button>}</div>}
   </>);
 }
